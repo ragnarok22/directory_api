@@ -1,10 +1,10 @@
 {
-  "name": "first-project",
+  "name": "directory-api",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "Ragnarok <sasuke.reinier@gmail.com>",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
