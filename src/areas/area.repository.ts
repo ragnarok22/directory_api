@@ -19,7 +19,7 @@ export class AreaRepository extends Repository<Area> {
       return areas;
     } catch (error) {
       this.logger.error(
-        `Failed to get tasks. Filter: ${JSON.stringify(filterDto)}`,
+        `Failed to get areas. Filter: ${JSON.stringify(filterDto)}`,
         error.stack,
       );
       throw new InternalServerErrorException();
