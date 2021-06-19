@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Area } from './area.model';
 import { v4 as uuid } from 'uuid';
 import { CreateAreaDto } from './dto/create-area.dto';
@@ -23,7 +23,13 @@ export class AreasService {
   }
 
   getAreaById(id: string): Area {
-    return this.areas.find((item) => item.id === id);
+    const found = this.areas.find((item) => item.id === id);
+
+    if (!found) {
+      throw new NotFoundException(`Area with id "${id}" not found`);
+    }
+
+    return found;
   }
 
   createArea(createAreaDto: CreateAreaDto): Area {

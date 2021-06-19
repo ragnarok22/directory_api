@@ -7,6 +7,8 @@ import {
   Patch,
   Post,
   Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AreasService } from './areas.service';
 import { Area } from './area.model';
@@ -31,6 +33,7 @@ export class AreasController {
   }
 
   @Post()
+  @UsePipes(ValidationPipe)
   createArea(@Body() createAreaDto: CreateAreaDto): Area {
     return this.areasService.createArea(createAreaDto);
   }
