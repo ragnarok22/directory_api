@@ -17,9 +17,11 @@ import { CreateAreaDto } from './dto/create-area.dto';
 import { GetAreaFilterDto } from './dto/get-area-filter.dto';
 import { Area } from './area.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { Logger } from '@nestjs/common';
 
 @Controller('areas')
 export class AreasController {
+  private logger = new Logger('AreasController');
   constructor(private areasService: AreasService) {}
 
   @Get()
