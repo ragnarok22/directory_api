@@ -38,14 +38,15 @@ export class DepartmentRepository extends Repository<Department> {
   async createDepartment(
     createDepartmentDto: CreateDepartmentDto,
   ): Promise<Department> {
-    const { name, campus } = createDepartmentDto;
-    const deparment = new Department();
-    deparment.name = name;
-    deparment.campus = campus;
+    const { name, campus, areaId } = createDepartmentDto;
+    const department = new Department();
+    department.name = name;
+    department.campus = campus;
+    department.areaId = areaId;
 
     try {
-      deparment.save();
-      return deparment;
+      department.save();
+      return department;
     } catch (error) {
       this.logger.error(
         `Failed to create department. ${JSON.stringify(createDepartmentDto)}`,

@@ -7,4 +7,7 @@ export class CreateDepartmentDto {
 
   @IsNotEmpty()
   campus: DeparmentCampus;
+
+  @IsNotEmpty()
+  areaId: number;
 }
