@@ -15,17 +15,18 @@ export class DepartmentRepository extends Repository<Department> {
     const query = this.createQueryBuilder('department');
 
     if (name) {
-      query.andWhere('deparment.name LIKE :name', { name: `%${name}%` });
+      query.andWhere('department.name LIKE :name', { name: `%${name}%` });
     }
 
     if (campus) {
-      query.andWhere('deparment.campus = :campus', { campus });
+      query.andWhere('department.campus = :campus', { campus });
     }
 
     try {
       const departments = query.getMany();
       return departments;
     } catch (error) {
+      console.log('entro aqui');
       this.logger.error(
         `Failed to get departments. Filter: ${JSON.stringify(filterDto)}`,
         error.stack,
