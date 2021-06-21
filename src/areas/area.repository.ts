@@ -10,12 +10,13 @@ export class AreaRepository extends Repository<Area> {
   async getAreas(filterDto: GetAreaFilterDto): Promise<Area[]> {
     const { name } = filterDto;
     const query = this.createQueryBuilder('area');
+    query.leftJoinAndSelect('area.departments', 'department');
 
     if (name) {
       query.andWhere('area.name LIKE :name', { name: `%${name}%` });
     }
     try {
-      const areas = query.getMany();
+      const areas = await query.getMany();
       return areas;
     } catch (error) {
       this.logger.error(
