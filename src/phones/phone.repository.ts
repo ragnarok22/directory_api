@@ -1,8 +1,13 @@
-import { EntityRepository, Repository } from 'typeorm';
-import { Logger, InternalServerErrorException } from '@nestjs/common';
+import { EntityRepository, getManager, Repository } from 'typeorm';
+import {
+  Logger,
+  InternalServerErrorException,
+  ConflictException,
+} from '@nestjs/common';
 import { Phone } from './phone.entity';
 import { GetPhonesFilterDto } from './dto/get-phones.dto';
 import { CreatePhoneDto } from './dto/create-phone.dto';
+import { Department } from '../departments/department.entity';
 
 @EntityRepository(Phone)
 export class PhoneRepository extends Repository<Phone> {
@@ -11,13 +16,14 @@ export class PhoneRepository extends Repository<Phone> {
   async getPhones(filterDto: GetPhonesFilterDto): Promise<Phone[]> {
     const { number } = filterDto;
     const query = this.createQueryBuilder('phone');
+    query.leftJoinAndSelect('phone.department', 'department');
 
     if (number) {
       query.andWhere('phone.number LIKE :number', { number: `%${number}%` });
     }
 
     try {
-      const phones = query.getMany();
+      const phones = await query.getMany();
       return phones;
     } catch (error) {
       this.logger.error(
@@ -29,14 +35,26 @@ export class PhoneRepository extends Repository<Phone> {
   }
 
   async createPhone(createPhoneDto: CreatePhoneDto): Promise<Phone> {
-    const { number } = createPhoneDto;
+    const { number, departmentId } = createPhoneDto;
     const phone = new Phone();
     phone.number = number;
 
+    const department = await getManager()
+      .createQueryBuilder(Department, 'department')
+      .where('department.id = :id', { id: departmentId })
+      .getOne();
+    phone.department = department;
+
     try {
-      phone.save();
+      await phone.save();
       return phone;
     } catch (error) {
+      if (error.code === '23505') {
+        throw new ConflictException(
+          `Phone with number "${number}" already exists.`,
+        );
+        return;
+      }
       this.logger.error(
         `Failed to create phone. ${JSON.stringify(createPhoneDto)}`,
         error.stack,

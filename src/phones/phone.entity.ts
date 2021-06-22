@@ -1,7 +1,9 @@
+import { Department } from '../departments/department.entity';
 import {
   BaseEntity,
   Column,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
@@ -14,4 +16,7 @@ export class Phone extends BaseEntity {
 
   @Column()
   number: string;
+
+  @ManyToOne(() => Department, (department) => department.phones)
+  department: Department;
 }

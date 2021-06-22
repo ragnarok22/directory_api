@@ -3,10 +3,12 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { DeparmentCampus } from './department-campus.enum';
 import { Area } from '../areas/area.entity';
+import { Phone } from '../phones/phone.entity';
 
 @Entity()
 export class Department extends BaseEntity {
@@ -21,6 +23,9 @@ export class Department extends BaseEntity {
 
   @ManyToOne(() => Area, (area) => area.departments)
   area: Area;
+
+  @OneToMany(() => Phone, (phone) => phone.department)
+  phones: Phone[];
 
   getCampusName(): string {
     switch (this.campus) {

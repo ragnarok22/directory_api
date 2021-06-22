@@ -13,6 +13,8 @@ export class DepartmentRepository extends Repository<Department> {
   ): Promise<Department[]> {
     const { name, campus } = filterDto;
     const query = this.createQueryBuilder('department');
+    query.leftJoinAndSelect('department.phones', 'phone');
+    query.leftJoinAndSelect('department.area', 'area');
 
     if (name) {
       query.andWhere('department.name LIKE :name', { name: `%${name}%` });
@@ -23,10 +25,9 @@ export class DepartmentRepository extends Repository<Department> {
     }
 
     try {
-      const departments = query.getMany();
+      const departments = await query.getMany();
       return departments;
     } catch (error) {
-      console.log('entro aqui');
       this.logger.error(
         `Failed to get departments. Filter: ${JSON.stringify(filterDto)}`,
         error.stack,
@@ -44,7 +45,7 @@ export class DepartmentRepository extends Repository<Department> {
     department.campus = campus;
 
     try {
-      department.save();
+      await department.save();
       return department;
     } catch (error) {
       this.logger.error(
