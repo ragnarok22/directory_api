@@ -32,6 +32,13 @@ export class DepartmentsController {
     return this.departmentsService.getDepartments(filterDto);
   }
 
+  @Get('/:id')
+  getDepartmentById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Department> {
+    return this.departmentsService.getDepartmentById(id);
+  }
+
   @Post()
   @UseGuards(AuthGuard())
   @UsePipes(ValidationPipe)
