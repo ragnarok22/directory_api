@@ -19,7 +19,9 @@ export class DepartmentsService {
   }
 
   async getDepartmentById(id: number): Promise<Department> {
-    const found = await this.departmentRepository.findOne(id);
+    const found = await this.departmentRepository.findOne(id, {
+      relations: ['phones'],
+    });
 
     if (!found) {
       throw new NotFoundException(`Department with id "${id}" not found`);
