@@ -13,4 +13,7 @@ export class CreateDepartmentDto {
     DeparmentCampus.OLM,
   ])
   campus: DeparmentCampus;
+
+  @IsNotEmpty()
+  areaId: number;
 }

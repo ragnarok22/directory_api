@@ -1,8 +1,14 @@
-import { EntityRepository, getManager, Repository } from 'typeorm';
+import {
+  EntityNotFoundError,
+  EntityRepository,
+  getManager,
+  Repository,
+} from 'typeorm';
 import {
   Logger,
   InternalServerErrorException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { Phone } from './phone.entity';
 import { GetPhonesFilterDto } from './dto/get-phones.dto';
@@ -39,17 +45,21 @@ export class PhoneRepository extends Repository<Phone> {
     const phone = new Phone();
     phone.number = number;
 
-    const department = await getManager()
-      .createQueryBuilder(Department, 'department')
-      .where('department.id = :id', { id: departmentId })
-      .getOne();
-    phone.department = department;
-
     try {
+      const department = await getManager()
+        .createQueryBuilder(Department, 'department')
+        .where('department.id = :id', { id: departmentId })
+        .getOneOrFail();
+      phone.department = department;
+
       await phone.save();
       return phone;
     } catch (error) {
-      if (error.code === '23505') {
+      if (error instanceof EntityNotFoundError) {
+        throw new BadRequestException(
+          `Department with id "${departmentId}" not found.`,
+        );
+      } else if (error.code === '23505') {
         throw new ConflictException(
           `Phone with number "${number}" already exists.`,
         );

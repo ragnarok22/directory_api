@@ -1,8 +1,19 @@
-import { EntityRepository, Repository } from 'typeorm';
+import {
+  EntityRepository,
+  Repository,
+  getManager,
+  EntityNotFoundError,
+} from 'typeorm';
 import { Department } from './department.entity';
-import { Logger, InternalServerErrorException } from '@nestjs/common';
+import {
+  Logger,
+  InternalServerErrorException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { GetDeparmentFilterDto } from './dto/get-department.dto';
 import { CreateDepartmentDto } from './dto/create-department.dto';
+import { Area } from 'src/areas/area.entity';
 
 @EntityRepository(Department)
 export class DepartmentRepository extends Repository<Department> {
@@ -39,15 +50,25 @@ export class DepartmentRepository extends Repository<Department> {
   async createDepartment(
     createDepartmentDto: CreateDepartmentDto,
   ): Promise<Department> {
-    const { name, campus } = createDepartmentDto;
+    const { name, campus, areaId } = createDepartmentDto;
     const department = new Department();
     department.name = name;
     department.campus = campus;
 
     try {
+      const area = await getManager()
+        .createQueryBuilder(Area, 'area')
+        .where('area.id = :id', { id: areaId })
+        .getOneOrFail();
+      department.area = area;
+
       await department.save();
       return department;
     } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new BadRequestException(`Area with id "${areaId}" not found.`);
+        return;
+      }
       this.logger.error(
         `Failed to create department. ${JSON.stringify(createDepartmentDto)}`,
         error.stack,
