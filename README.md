@@ -1,6 +1,9 @@
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Directory API for University of Holguín
+
+ORM diagram:
+![ORM](orm.png)
 
 ## Installation
 
