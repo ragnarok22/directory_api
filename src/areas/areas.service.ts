@@ -16,7 +16,9 @@ export class AreasService {
   }
 
   async getAreaById(id: number): Promise<Area> {
-    const found = await this.areaRepository.findOne(id);
+    const found = await this.areaRepository.findOne(id, {
+      relations: ['departments'],
+    });
 
     if (!found) {
       throw new NotFoundException(`Area with id "${id}" not found`);
